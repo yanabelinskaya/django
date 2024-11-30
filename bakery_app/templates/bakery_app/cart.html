@@ -1,0 +1,57 @@
+{% extends 'bakery_app/base.html' %}
+
+{% block title %}Корзина{% endblock %}
+
+{% block content %}
+<h1>Ваша корзина</h1>
+
+{% if cart_items %}
+    <div class="cart-container">
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Фото</th>
+                    <th>Товар</th>
+                    <th>Цена</th>
+                    <th>Количество</th>
+                    <th>Общая цена</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                    <tr>
+                        <td>
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-product-image">
+                            {% else %}
+                                <span>Без изображения</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.product.price }}₽</td>
+                        <td>
+                            <div class="quantity-controls">
+                                <a href="{% url 'decrease_quantity' item.id %}" class="btn btn-decrease">-</a>
+                                <span>{{ item.quantity }}</span>
+                                <a href="{% url 'increase_quantity' item.id %}" class="btn btn-increase">+</a>
+                            </div>
+                        </td>
+                        <td>{{ item.total_price }}₽</td>
+                        <td>
+                            <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-remove">Удалить</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="cart-summary">
+            <h3>Итого: {{ total_amount }}₽</h3>
+            <a href="{% url 'checkout' %}" class="btn btn-checkout">Оформить заказ</a>
+        </div>
+    </div>
+{% else %}
+    <p>Ваша корзина пуста.</p>
+{% endif %}
+{% endblock %}

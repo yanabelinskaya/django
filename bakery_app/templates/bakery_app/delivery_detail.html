@@ -1,0 +1,9 @@
+<h2>Информация о доставке</h2>
+
+<p>Заказ №{{ delivery.order.id }}</p>
+<p>Дата доставки: {{ delivery.delivery_date }}</p>
+<p>Статус: {{ delivery.status }}</p>
+<p>Способ оплаты: {{ delivery.payment_method }}</p>
+<p>Адрес доставки: {{ delivery.delivery_address }}</p>
+
+<a href="{% url 'home' %}">Вернуться на главную</a>

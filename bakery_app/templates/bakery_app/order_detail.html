@@ -1,0 +1,54 @@
+{% extends 'bakery_app/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Детали заказа №{{ order.id }}</h2>
+    <p>Дата заказа: {{ order.order_date }}</p>
+    <p>Общая сумма: {{ order.total_amount }} ₽</p>
+
+    <h4>Товары в заказе</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Продукт</th>
+                <th>Цена</th>
+                <th>Количество</th>
+                <th>Сумма</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.items.all %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.price }} ₽</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.total_price }} ₽</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">Нет товаров в заказе.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h4>Выберите способ оплаты</h4>
+    <form method="POST" action="{% url 'checkout' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="payment_method">Способ оплаты:</label>
+            <select name="payment_method" id="payment_method" class="form-control">
+                <option value="cash_on_delivery">При получении</option>
+            </select>
+        </div>
+
+        <h4>Введите адрес доставки</h4>
+        <div class="form-group">
+            <label for="delivery_address">Адрес доставки:</label>
+            <textarea name="delivery_address" id="delivery_address" rows="4" class="form-control" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Оформить заказ</button>
+    </form>
+</div>
+{% endblock %}

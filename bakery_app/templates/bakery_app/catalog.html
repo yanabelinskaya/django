@@ -1,0 +1,36 @@
+{% extends 'bakery_app/base.html' %}
+
+{% block title %}Каталог{% endblock %}
+
+{% block content %}
+<h1>Каталог продуктов</h1>
+<p>Просмотрите наш ассортимент выпечки:</p>
+
+<div class="product-container">
+    {% for product in products %}
+        <div class="product-card">
+            {% if product.image %}
+                <div class="product-image-wrapper">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                </div>
+            {% else %}
+                <p>Изображение недоступно.</p>
+            {% endif %}
+            
+            <div class="product-info">
+                <h3 class="product-title">{{ product.name }}</h3>
+                <p class="product-description">{{ product.description }}</p>
+                <p><strong>Цена:</strong> {{ product.price }}₽</p>
+                <p><strong>Категория:</strong> {{ product.get_category_display }}</p>
+
+                <a href="{% url 'add_to_cart' product.id %}" class="add-to-cart-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+            </div>
+        </div>
+    {% empty %}
+        <p>Нет доступных продуктов.</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

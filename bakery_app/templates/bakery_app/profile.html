@@ -1,0 +1,12 @@
+{% extends 'bakery_app/base.html' %}
+
+{% block title %}Профиль пользователя{% endblock %}
+
+{% block content %}
+<h1>Добро пожаловать, {{ customer.full_name }}!</h1>
+<p><strong>Электронная почта:</strong> {{ customer.email }}</p>
+<p><strong>Телефон:</strong> {{ customer.phone }}</p>
+
+<a href="{% url 'logout' %}" class="btn btn-danger">Выйти</a>
+
+{% endblock %}

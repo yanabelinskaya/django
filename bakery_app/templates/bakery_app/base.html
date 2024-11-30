@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>{% block title %}Моя пекарня{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'home' %}">Моя пекарня</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mr-auto">
+                        <li >
+                            <a class="nav-link" href="{% url 'home' %}">Главная</a>
+                        </li>
+                        <li >
+                            <a class="nav-link" href="{% url 'catalog' %}">Каталог</a>
+                        </li>
+                        <li>
+                            {% if request.user.latest_delivery %}
+                                <a class="nav-link" href="{% url 'delivery_detail' delivery_id=request.user.latest_delivery.id %}">Доставка</a>
+                            {% else %}
+                                <!-- Если у пользователя нет доставки, выводим текст о том, что доставки нет -->
+                                <span class="nav-link">Доставки нет</span>
+                            {% endif %}
+                        </li>
+                    </ul>
+                    <a class="nav-link" href="{% url 'cart' %}">
+                        <i class="fas fa-shopping-cart"></i>
+                    </a>
+                    <a class="nav-link" href="{% url 'profile' %}">
+                        <i class="fas fa-user"></i> 
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Пекарня "Веселый хлебушек"</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
