@@ -30,15 +30,11 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-from django.contrib.auth.hashers import check_password
-
 class Customer(AbstractUser):
     full_name = models.CharField(max_length=255)
     phone = models.CharField(max_length=15, unique=True)
     deliveries = models.ManyToManyField('Delivery', related_name='customers')
 
-
-    # Переопределим save(), чтобы автоматизировать присвоение значения username
     def save(self, *args, **kwargs):
         if not self.username:
             self.username = self.email  # Присваиваем email значению username, если оно пустое
@@ -55,10 +51,13 @@ class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='orders')
     order_date = models.DateTimeField(auto_now_add=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    delivery_address = models.TextField(null=True, blank=True)  # Адрес доставки
+    delivery_address = models.TextField(null=True, blank=True) 
 
     def __str__(self):
         return f'Order {self.id} by {self.customer}'
+    
+    # Связь с корзиной
+    cart_items = models.ManyToManyField('CartItem', related_name='orders', blank=True)
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
