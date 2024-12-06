@@ -25,6 +25,7 @@ def cart(request):
     return render(request, 'bakery_app/cart.html', {'cart_items': cart_items, 'total_amount': total_amount})
 
 # Страница доставки
+# Страница доставки
 def delivery_detail(request, delivery_id):
     try:
         delivery = get_object_or_404(Delivery, id=delivery_id, customer=request.user)
@@ -35,11 +36,19 @@ def delivery_detail(request, delivery_id):
     return render(request, 'bakery_app/delivery_detail.html', {'delivery': delivery})
 
 
-
 # Страница каталога
 def catalog(request):
-    products = Product.objects.all()  # Получаем все продукты из базы данных
+    search_query = request.GET.get('search', '')  # Получаем поисковый запрос
+
+    if search_query:
+        # Фильтрация товаров по названию, нечувствительная к регистру
+        products = Product.objects.filter(name__icontains=search_query)  
+    else:
+        products = Product.objects.all()  # Если запрос пустой, показываем все товары
+
     return render(request, 'bakery_app/catalog.html', {'products': products})
+
+
 
 # Вход в систему
 def login_view(request):
@@ -113,17 +122,23 @@ def add_to_cart(request, product_id):
     return redirect('cart')
 
 # Оформление заказа
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import CartItem, Order, Delivery
+from django.utils import timezone
+
 def checkout(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
+    # Получаем все товары в корзине
     cart_items = CartItem.objects.filter(customer=request.user)
     
     if not cart_items:
         messages.error(request, "Ваша корзина пуста.")
         return redirect('cart')
 
-    total_amount = sum(item.total_price for item in cart_items)
+    total_amount = sum(item.total_price for item in cart_items)  # Общая сумма
 
     # Создаем заказ
     order = Order.objects.create(
@@ -142,7 +157,7 @@ def checkout(request):
     # Очистка корзины
     cart_items.delete()
 
-    # Получаем данные из формы
+    # Если это POST-запрос, создаем доставку
     if request.method == 'POST':
         payment_method = request.POST.get('payment_method')
         delivery_address = request.POST.get('delivery_address')
@@ -160,8 +175,9 @@ def checkout(request):
         messages.success(request, f'Заказ на сумму {total_amount}₽ успешно оформлен!')
 
         # Перенаправление на страницу с деталями доставки
-        return redirect('delivery_detail', delivery_id=delivery.id)  # Убедитесь, что это правильный редирект
+        return redirect('delivery_detail', delivery_id=delivery.id)
 
+    # Если это GET-запрос, то просто отображаем страницу с деталями заказа
     return render(request, 'bakery_app/order_detail.html', {'order': order})
 
 
